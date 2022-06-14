@@ -1,0 +1,106 @@
+from requests import *
+import time,os,threading
+os.system('clear')
+
+user=[
+	'tad0025',
+	'tn2895461'
+]
+
+i=int(input('nhap: '))
+cook='PESAutoLogin=ses_user%3D'+user[i]+'%26ses_hash%3D77a4c0248e773871ed93798144a41fca'
+
+def g(url):
+	global cook
+	head={'Cookie' : cook}
+	return get(url=url,headers=head).text
+
+def p(url,data):
+	global cook
+	head={
+		'Content-Type' : 'application/x-www-form-urlencoded; charset=UTF-8',
+		'Cookie' : cook
+	}
+	return post(url=url,headers=head,data=data).text
+
+def cho(tg):
+	for j in range(tg,0,-1):
+		print('cho',j,'giay ',end='\r')
+		time.sleep(1)
+
+def doi(dl):
+	global coin
+	coin=int(dl.split('c_coins">')[1].split(' ')[0])
+	print('	COIN:',coin)
+	if coin>99:
+		url='https://team-like.net/?page=convert'
+		data='coins=100&submit=%E0%B8%AA%E0%B9%88%E0%B8%87%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%B9%E0%B8%A5'
+		p(url,data)
+		coin-=100
+
+def xem():
+	global d,coin
+	url='https://team-like.net/index.php?page=module&md=youtube'
+	dl=g(url)
+	doi(dl)
+	dl=dl.split('<div class="website_block" id="')
+	for i in range(1,len(dl)):
+		id=dl[i].split('"')[0]
+		url='https://team-like.net/index.php?page=module&md=youtube&vid='+id
+		tg=int(g(url).split('var length = ')[1].split(';')[0])
+		
+		cho(tg)
+		
+		d+=1
+		url='https://team-like.net/system/modules/youtube/process.php'
+		data='data='+id
+		tg=p(url,data)
+		if tg!='0':
+			coin+=int(tg)
+			print('thanh cong',d,'=> COIN:',coin)
+		
+def web():
+	global d,coin
+	d+=1
+	url='https://team-like.net/system/modules/surf/process.php'
+	data='get=1'
+	dl=p(url,data)
+	if dl.count('sid":"')==0:
+		print('    het job')
+		quit()
+	id=dl.split('sid":"')[1].split('"')[0]
+	tg=int(dl.split('time":"')[1].split('"')[0])
+	
+	cho(tg)
+	
+	data='complete=1&sid='+id
+	tg=p(url,data)
+	if tg!='0':
+		coin+=int(tg)
+		print('thanh cong',d,'=> COIN:',coin)
+
+#  BEGIN
+d=0
+coin=0
+while True:
+	xem()
+	for i in range(5): web()
+'''d=0
+coin=0
+i=input('gg ')
+while True:
+	if i=='1': xem()
+	else: web()'''
+
+'''def xem1():
+	while True: xem()
+def web1():
+	while True: web()
+
+d=0
+coin=0
+s0=threading.Thread(name='xem1',target=xem1)
+s0.start()
+
+s1=threading.Thread(name='web1',target=web1)
+s1.start()'''
